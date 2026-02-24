@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags:
+  - Breads
+  - Flour_Pile
+  - Oven
+  - Material
+  - Enemy
+  - Camp_(Small)
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Enemy_Layer
+  - Water
+  - UI
+  - Breads_Layer
+  - Map_Object_Layer
+  - Collide_Only_With_Enemies_Layer
+  - Oven_Layer
+  - Camp_Layer
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 4263467283
+    locked: 0
+  - name: Map_Objects
+    uniqueID: 2223807209
+    locked: 0
+  - name: Oven
+    uniqueID: 2071864177
+    locked: 0
+  - name: Breads
+    uniqueID: 2860172851
+    locked: 0
+  - name: Effects and such
+    uniqueID: 3161049783
+    locked: 0
+  - name: New Layer 7
+    uniqueID: 3885307345
+    locked: 0
+  m_RenderingLayers:
+  - Default
