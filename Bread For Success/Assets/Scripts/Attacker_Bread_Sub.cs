@@ -54,7 +54,7 @@ public class Attacker_Bread_Sub : Base_Bread_Class
             {
                  Is_Idle = false;
             }
-            else if (!Current_Target.activeInHierarchy) //!!!!!!!!!this needs changed bc it will lag the shit outta everything, just make them explore or sum idk yet
+            else if (!Current_Target.activeInHierarchy && !Is_Targeting_Enemy) //!!!!!!!!!this needs changed bc it will lag the shit outta everything, just make them explore or sum idk yet
             {
                 Current_Target = Oven;
             }

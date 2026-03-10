@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 5344362121254404809}
   - component: {fileID: -1636132363874064620}
   - component: {fileID: -8695633092683076925}
-  - component: {fileID: -4323172880638248400}
+  - component: {fileID: 7381750973614786032}
   m_Layer: 6
-  m_Name: Gatherer_Bread_Slice
+  m_Name: Explorer_Bread
   m_TagString: Breads
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -130,7 +130,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDamping: 0
+  m_LinearDamping: 0.5
   m_AngularDamping: 0.05
   m_GravityScale: 0
   m_Material: {fileID: 6200000, guid: 6925d102b449a8c45a76be369302e4e9, type: 2}
@@ -180,7 +180,7 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: -0.0010846392, y: 0}
   m_Radius: 0.07709023
---- !u!114 &-4323172880638248400
+--- !u!114 &7381750973614786032
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -189,9 +189,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5398415251049086470}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8f54fcdf7d9cba47954c207166b91f5, type: 3}
+  m_Script: {fileID: 11500000, guid: cc66c58cb546b784fbd77604a1ba5ecf, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Gatherer_Bread_Sub
+  m_EditorClassIdentifier: Assembly-CSharp::Support_Bread_Sub
   Sight_Range: 0
   Patrol_Type: 0
   Patrol_Speed: 0
@@ -226,6 +226,7 @@ MonoBehaviour:
   Ingredients_And_Materials_On_Map: []
   Flour_Piles: []
   Patrol_Points_Close: []
+  Camps_On_Map: []
   Is_Collecting: 0
   Is_Retreating: 0
   Is_Touching_Flour_Pile: 0
@@ -237,3 +238,4 @@ MonoBehaviour:
   Is_Patrolling: 0
   Enemy_In_Sight: 0
   Dead: 0
+  Looking_For_Enemies_In_Sight: 0

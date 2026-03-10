@@ -15,8 +15,7 @@ public class Base_Enemy_Behavior : MonoBehaviour
     public bool Enemy_Is_Wandering_Mob = false;
 
     //enemy base stats
-    public float Health;
-    public float Mass;
+    public float Health = 1;
     public float Max_Speed;
     public float Acceleration;
     public float Sight_Range;
@@ -35,14 +34,22 @@ public class Base_Enemy_Behavior : MonoBehaviour
     // enemy Components
     private Rigidbody2D My_Rigidbody;
     public GameObject Current_Target = null;
+    public GameObject Home_Camp = null;
+    public GameObject Seek_Point_Prefab;
+    public GameObject Current_Seek_Point;
+    private GameObject Game_Manager;
+    public float Camp_Leash_Distance;
+    public float In_Camp_Offset;
+
+
 
     //Enemy Conditionals
     public bool Is_Inside_Patrol_Radius;
     public bool Dead;
+    public bool Is_Targeting_Bread_Or_Oven;
 
     // time variables 
     public float checkInterval;
-    private float Next_Enemy_In_Sight_Check_CheckTime = 0f;
     private float Next_Aggro_CheckTime = 0f;
     private float Last_Enemy_Sighted_Time = 0f;
     public float Aggro_Time;
@@ -55,7 +62,6 @@ public class Base_Enemy_Behavior : MonoBehaviour
     void Start()
     {
         Assign_Objects_And_Components();
-        Enemy_Is_Aggressive = true; //TEMPORARY REMOVE LATER, BEHAVIOR WILL BE SET THROUGH INSTANTIATION
 
     }
 
@@ -64,34 +70,7 @@ public class Base_Enemy_Behavior : MonoBehaviour
     {
         if (!Dead)
         {
-            if (Health <= 0)
-            {
-                Die(1, null, null);
-            }
-
-            if (Time.time >= Last_Enemy_Sighted_Time && Current_Target == null)
-            {
-                Check_For_Breads_In_Sight();
-                Last_Enemy_Sighted_Time = Time.time + checkInterval;
-            }
-
-
-            if (Time.time >= Next_Aggro_CheckTime && Current_Target != null) // once we are locked on, delay the checks by the aggro time instead
-            {
-                Check_For_Breads_In_Sight();
-                Next_Aggro_CheckTime = Time.time + Aggro_Time;
-                // Debug.Log("Aggro_Check");
-            }
-
-            if (Time.time >= Next_Attack_Time && Time.time >= Next_AttackCheck_Time && Current_Target != null)
-            {
-                if (Current_Target.CompareTag("Breads") || Current_Target.CompareTag("Oven"))
-                {
-                    //Debug.Log("Attempt_Attack");
-                    Attack_Bread_Or_Oven();
-                    Next_AttackCheck_Time = Time.time + .2f; // so we can only attack check 5 times per second, if we somehow end up with attacking more than 5 times per second lower this
-                }
-            }
+            Base_Enemy_Function_Calls();
         }
 
     }
@@ -107,6 +86,55 @@ public class Base_Enemy_Behavior : MonoBehaviour
         }
     }
         
+
+    private void Base_Enemy_Function_Calls()
+    {
+        if (Health <= 0)
+        {
+            Die(1, null, null);
+        }
+
+        if (Time.time >= Last_Enemy_Sighted_Time && Current_Target == null)
+        {
+            Check_For_Breads_In_Sight();
+            Last_Enemy_Sighted_Time = Time.time + checkInterval;
+        }
+
+
+        if (Time.time >= Next_Aggro_CheckTime && Current_Target != null) // once we are locked on, delay the checks by the aggro time instead
+        {
+            Check_For_Breads_In_Sight();
+            Next_Aggro_CheckTime = Time.time + Aggro_Time;
+            // Debug.Log("Aggro_Check");
+        }
+
+        if (Time.time >= Next_Attack_Time && Time.time >= Next_AttackCheck_Time && Current_Target != null)
+        {
+            if (Current_Target.CompareTag("Breads") || Current_Target.CompareTag("Oven"))
+            {
+                //Debug.Log("Attempt_Attack");
+                Attack_Bread_Or_Oven();
+                Next_AttackCheck_Time = Time.time + .2f; // so we can only attack check 5 times per second, if we somehow end up with attacking more than 5 times per second lower this
+            }
+        }
+
+        if (Current_Target != null && Current_Target.CompareTag("Breads"))
+        {
+            Is_Targeting_Bread_Or_Oven = true;
+        }
+
+        else if(Current_Target == null || !(Current_Target.CompareTag("Breads")))
+        {
+            Is_Targeting_Bread_Or_Oven = false;
+        }
+
+
+        if (Home_Camp != null && Home_Camp.activeInHierarchy && !Is_Targeting_Bread_Or_Oven) //if camp is destroyed then become normal wandering enemy
+        {
+            Camp_Leash_Behavior();
+        }
+
+    }
 
 
     protected virtual void Move_Enemy_Towards_Target() // if we want different movement overwrite this function
@@ -124,7 +152,7 @@ public class Base_Enemy_Behavior : MonoBehaviour
     private void Assign_Objects_And_Components()
     {
         My_Rigidbody = gameObject.GetComponent<Rigidbody2D>();
-
+        Game_Manager = GameObject.Find("Game_Controller (and Memory)");
     }
 
 
@@ -149,6 +177,72 @@ public class Base_Enemy_Behavior : MonoBehaviour
     }
 
 
+    private void Camp_Leash_Behavior()
+    {
+            if (Current_Target == null && Current_Seek_Point == null)
+            {
+                Current_Target = Home_Camp;
+            }
+
+            else if (!(Current_Seek_Point == null))
+            {
+                Current_Target = Current_Seek_Point;
+            }
+
+
+            if (Is_Inside_Patrol_Radius && Current_Seek_Point == null) // current seek point will be null once we walk into and destroy is
+            {
+
+                // Get random angle
+                float randomAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+
+                // Get direction (these are just instructions!)
+                Vector2 direction = new Vector2(
+                    Mathf.Cos(randomAngle),  // Tells us how much to move horizontally
+                    Mathf.Sin(randomAngle)   // Tells us how much to move vertically
+                );
+
+                // Calculate where to put the object
+                Vector2 worldPosition = (Vector2)gameObject.transform.position + (direction * Camp_Leash_Distance);
+
+                GameObject Patrol_Seek_Point = Instantiate(Seek_Point_Prefab, worldPosition, gameObject.transform.rotation);
+
+                Patrol_Seek_Point.GetComponent<Seek_Point_Info>().Point_ID = Game_Manager.GetComponent<Game_Controller_Singleton>().Seek_Empty_Gameobject_ID;
+
+                Game_Manager.GetComponent<Game_Controller_Singleton>().Seek_Empty_Gameobject_ID++; //increment this to the next number so any future points created will have a unique ID
+
+                Patrol_Seek_Point.name = "Seek Point Number: " + Patrol_Seek_Point.GetComponent<Seek_Point_Info>().Point_ID;
+
+                Current_Seek_Point = Patrol_Seek_Point;
+                Current_Target = Patrol_Seek_Point;
+            }
+
+
+            else if (!Is_Inside_Patrol_Radius)
+            {
+                Current_Target = Home_Camp;
+            }
+        
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject == Home_Camp)  //use is inside patrol radius as a bool that flips upon touching the camp or patrol_seek_point that is targeted
+        {
+            Is_Inside_Patrol_Radius = true;
+        }
+       
+        if (Current_Seek_Point != null && collision.gameObject == Current_Seek_Point)
+        {
+            Is_Inside_Patrol_Radius = false;
+            Destroy(Current_Seek_Point);
+            Debug.Log("Gayyyyy");
+        }
+    }
+
+
+
+    #region Combat_Functions
     protected virtual void Attack_Bread_Or_Oven() // can be overwritten because yea, basic enemies should only be able to attack one bread at a time tho so just attack the current target
     {
         Collider2D[] Breads_In_Attack_Range_Now = Physics2D.OverlapCircleAll(transform.position, Attack_Range, (1 << 6) | (1 << 9)); // range check
@@ -174,7 +268,7 @@ public class Base_Enemy_Behavior : MonoBehaviour
 
     }
 
-    public virtual void Enemy_Take_Hit(GameObject Source_Of_Attack, float Attack_Damage, float Attack_Knockback, int Status_Effect_Num_Applied, int Second_Status_Effect_Num_Applied, GameObject AOE_To_Instantiate) 
+    public virtual void Enemy_Take_Hit(GameObject Source_Of_Attack, float Attack_Damage, float Attack_Knockback, int Status_Effect_Num_Applied = 0, int Second_Status_Effect_Num_Applied = 0, GameObject AOE_To_Instantiate = null) 
     {
         // aggro if attacked
         if (!Enemy_Is_Passive) // if is a puss, dont fight back
@@ -200,7 +294,7 @@ public class Base_Enemy_Behavior : MonoBehaviour
         Destroy(gameObject, Death_Animation_Length);
     }
 
-
+    #endregion
 
 
 }

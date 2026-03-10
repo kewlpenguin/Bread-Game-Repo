@@ -97,6 +97,7 @@ public class Base_Bread_Class : MonoBehaviour
     public bool Enemy_In_Sight;
     public bool Dead;
     public bool Looking_For_Enemies_In_Sight;
+    public bool Is_Targeting_Enemy;
 
     void Start()
     {
@@ -191,12 +192,11 @@ public class Base_Bread_Class : MonoBehaviour
 
         All_Map_Object_Lists.Add(Flour_Piles);
 
-        foreach (GameObject Map_Object in Map_Objects) // assign all flour piles to list
+        GameObject[] Temp = GameObject.FindGameObjectsWithTag("Camp_(Small)");
+        
+        for(int i = 0; i < Temp.Length; i++)
         {
-            if (Map_Object.CompareTag("Camp_(Small)"))
-            {
-                Camps_On_Map.Add(Map_Object.gameObject);
-            }
+            Camps_On_Map.Add(Temp[i]);
         }
 
         All_Map_Object_Lists.Add(Camps_On_Map);
@@ -224,6 +224,17 @@ public class Base_Bread_Class : MonoBehaviour
         {
             Is_Idle = true;
         }
+
+        if (Current_Target != null && Current_Target.CompareTag("Enemy")) 
+        {
+            Is_Targeting_Enemy = true;
+        }
+        else if(Current_Target == null || !Current_Target.CompareTag("Enemy"))
+        {
+            Is_Targeting_Enemy = false;
+        }
+
+
 
         if (Health <= 0)
         {
@@ -263,15 +274,7 @@ public class Base_Bread_Class : MonoBehaviour
             Retreat_Behavior(); //need to add later
         }
 
-        /*
-        if (Current_Target == Oven) /////suuuuuuupeeer temporary Remove later
-        {
-            if (!Is_Patrolling)
-            {
-                Patrol_Oven(Patrol_Type, Patrol_Speed);
-            }
-        }
-    */
+
     }
 
 
@@ -288,7 +291,7 @@ public class Base_Bread_Class : MonoBehaviour
                 My_Rigidbody.AddForce(Normalized_Vect * Lunge_Force, ForceMode2D.Impulse);
 
                 Current_Target.gameObject.GetComponent<Base_Enemy_Behavior>().Enemy_Take_Hit(gameObject, Damage, Knockback, 0, 0, null); // perform hit
-                                                                                                                                         //Debug.Log("Hit_Enemy" + Current_Target.name);
+                                                                                                                                        Debug.Log("Hit_Enemy" + Current_Target.name);
                 Next_Attack_Time = Time.time + Attack_Speed;
                 return;
             }

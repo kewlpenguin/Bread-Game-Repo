@@ -10,6 +10,7 @@ TagManager:
   - Material
   - Enemy
   - Camp_(Small)
+  - Grass_Grid
   layers:
   - Default
   - TransparentFX
