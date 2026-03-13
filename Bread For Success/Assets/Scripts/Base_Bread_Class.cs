@@ -68,7 +68,7 @@ public class Base_Bread_Class : MonoBehaviour
     public float Attack_Range;
     protected float Enemy_In_Sight_Range_Check_Delay = .5f;
     protected float Last_Enemy_Check_Time = 0;
-
+    public float Death_Anim_Length;
 
 
     //GameObjects Arrays For all Map Objects and enemies
@@ -98,6 +98,11 @@ public class Base_Bread_Class : MonoBehaviour
     public bool Dead;
     public bool Looking_For_Enemies_In_Sight;
     public bool Is_Targeting_Enemy;
+    public bool Is_Targeting_Camp;
+    public bool Is_Explorer;
+    public bool Is_Attacker;
+    public bool Is_Gatherer;
+
 
     void Start()
     {
@@ -229,29 +234,37 @@ public class Base_Bread_Class : MonoBehaviour
         {
             Is_Targeting_Enemy = true;
         }
+       
         else if(Current_Target == null || !Current_Target.CompareTag("Enemy"))
         {
             Is_Targeting_Enemy = false;
         }
-
+       
+        if (Current_Target != null && Current_Target.CompareTag("Camp_(Small)"))
+        {
+            Is_Targeting_Camp = true;
+        }
+        
+        else if (Current_Target == null || !Current_Target.CompareTag("Camp_(Small)"))
+        {
+            Is_Targeting_Camp = false;
+        }
 
 
         if (Health <= 0)
         {
-            Die(1, null, null);
+            Die(Death_Anim_Length, null, null);
         }
 
 
-        if (Time.time >= Next_Attack_Time && Time.time >= Next_AttackCheck_Time && !Is_Idle && Current_Target.CompareTag("Enemy")) // if our target is an enemy then we start trying to attack it
+        if (Time.time >= Next_Attack_Time  && Is_Targeting_Enemy) // if our target is an enemy then we start trying to attack it
         {
             Attack_Enemy();
-            Next_AttackCheck_Time = Time.time + .2f; // so we can only attack check 5 times per second, if we somehow end up with a bread attacking more than 5 times per second lower this
         }
 
-        if (Time.time >= Next_Attack_Time && Time.time >= Next_AttackCheck_Time && !Is_Idle && Current_Target.CompareTag("Camp_(Small)")) // if our target is an camp then we start trying to attack it
+        if (Time.time >= Next_Attack_Time && Is_Targeting_Camp) // if our target is an camp then we start trying to attack it
         {
             Attack_Camp();
-            Next_AttackCheck_Time = Time.time + .2f; // so we can only attack check 5 times per second, if we somehow end up with a bread attacking more than 5 times per second lower this
         }
 
         if (Is_Depositing)
@@ -291,7 +304,6 @@ public class Base_Bread_Class : MonoBehaviour
                 My_Rigidbody.AddForce(Normalized_Vect * Lunge_Force, ForceMode2D.Impulse);
 
                 Current_Target.gameObject.GetComponent<Base_Enemy_Behavior>().Enemy_Take_Hit(gameObject, Damage, Knockback, 0, 0, null); // perform hit
-                                                                                                                                        Debug.Log("Hit_Enemy" + Current_Target.name);
                 Next_Attack_Time = Time.time + Attack_Speed;
                 return;
             }
@@ -312,7 +324,7 @@ public class Base_Bread_Class : MonoBehaviour
                 My_Rigidbody.AddForce(Normalized_Vect * Lunge_Force, ForceMode2D.Impulse);
 
                 Current_Target.gameObject.GetComponent<Camp_Manager>().Camp_Take_Hit(gameObject, Damage, null); // perform hit
-                                                                                                                //Debug.Log("Hit_Enemy" + Current_Target.name);
+                                                                                                                Debug.Log("Hit_Enemy" + Current_Target.name);
                 Next_Attack_Time = Time.time + Attack_Speed;
                 return;
             }
@@ -328,7 +340,7 @@ public class Base_Bread_Class : MonoBehaviour
     // will be added to all breads, moves the bread towards the current target which could be anything, assuming it exists and we are not dead
     private void FixedUpdate()
     {
-        if (!Is_Idle && !Dead && Current_Target != null)
+        if (!Dead && Current_Target != null)
         {
             Move_Towards_Target();
         }
@@ -546,7 +558,11 @@ public class Base_Bread_Class : MonoBehaviour
             if (Collider.gameObject.CompareTag("Enemy"))
             {
                 // Debug.Log("Found: " + obj.gameObject.name);
-                Current_Target = Collider.gameObject;
+                if (!Is_Explorer)
+                {
+                    Current_Target = Collider.gameObject;
+                }
+
                 return;
             }
         }

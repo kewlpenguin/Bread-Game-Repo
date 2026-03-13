@@ -27,7 +27,7 @@ public class Base_Enemy_Behavior : MonoBehaviour
     private float Next_AttackCheck_Time = 0;
     public float Attack_Range;
     public float Knockback;
-
+    public float Death_Animation_Time;
 
 
 
@@ -40,7 +40,7 @@ public class Base_Enemy_Behavior : MonoBehaviour
     private GameObject Game_Manager;
     public float Camp_Leash_Distance;
     public float In_Camp_Offset;
-
+    private List<GameObject> All_Previous_seek_Points = new List<GameObject>(0) ;
 
 
     //Enemy Conditionals
@@ -91,7 +91,7 @@ public class Base_Enemy_Behavior : MonoBehaviour
     {
         if (Health <= 0)
         {
-            Die(1, null, null);
+            Die(Death_Animation_Time, null, null);
         }
 
         if (Time.time >= Last_Enemy_Sighted_Time && Current_Target == null)
@@ -207,6 +207,8 @@ public class Base_Enemy_Behavior : MonoBehaviour
 
                 GameObject Patrol_Seek_Point = Instantiate(Seek_Point_Prefab, worldPosition, gameObject.transform.rotation);
 
+            All_Previous_seek_Points.Add(Patrol_Seek_Point);
+
                 Patrol_Seek_Point.GetComponent<Seek_Point_Info>().Point_ID = Game_Manager.GetComponent<Game_Controller_Singleton>().Seek_Empty_Gameobject_ID;
 
                 Game_Manager.GetComponent<Game_Controller_Singleton>().Seek_Empty_Gameobject_ID++; //increment this to the next number so any future points created will have a unique ID
@@ -236,7 +238,6 @@ public class Base_Enemy_Behavior : MonoBehaviour
         {
             Is_Inside_Patrol_Radius = false;
             Destroy(Current_Seek_Point);
-            Debug.Log("Gayyyyy");
         }
     }
 
@@ -291,6 +292,15 @@ public class Base_Enemy_Behavior : MonoBehaviour
     public virtual void Die(float Death_Animation_Length, GameObject Death_Animation, GameObject Post_Death_Effect)  // post death effect is like a suicide bomb or healing projectiles
     {
         Dead = true;
+
+        foreach(GameObject Seek_Point in All_Previous_seek_Points) // clean up last seek point before death or others if there are any
+        {
+            if(Seek_Point != null )
+            {
+                Destroy(Seek_Point);
+            }
+        }
+
         Destroy(gameObject, Death_Animation_Length);
     }
 

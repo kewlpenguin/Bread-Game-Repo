@@ -27,7 +27,7 @@ public class Gatherer_Bread_Sub : Base_Bread_Class
 
     private void FixedUpdate()
     {
-        if (!Is_Idle && !Dead && Current_Target != null && Current_Target.activeInHierarchy)
+        if (!Dead && Current_Target != null && Current_Target.activeInHierarchy)
         {
             Move_Towards_Target();
         }

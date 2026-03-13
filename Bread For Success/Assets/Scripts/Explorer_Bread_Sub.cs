@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
-public class Support_Bread_Sub : Base_Bread_Class
+public class Explorer_Bread_Sub : Base_Bread_Class
 {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -12,6 +12,7 @@ public class Support_Bread_Sub : Base_Bread_Class
         Assign_Components_And_GameObjects();
         Find_Map_Objects();
         Is_Idle = true;
+        Is_Explorer = true;
     }
 
     // Update is called once per frame
@@ -22,7 +23,7 @@ public class Support_Bread_Sub : Base_Bread_Class
             Base_Bread_Operation_Function_Calls(); // includes die check, current target check, depositing check, collecting check, and retreat threshold check. is idle will be set to true if our current target is not active
             Support_Behavior();
           
-            if (Current_Target != null && !Current_Target.CompareTag("Enemy") && (Time.time - Last_Enemy_Check_Time) > Enemy_In_Sight_Range_Check_Delay) // if we are not targeting an enemy, check if there is one in range then target it
+            if (Current_Target != null && Is_Targeting_Enemy && (Time.time - Last_Enemy_Check_Time) > Enemy_In_Sight_Range_Check_Delay) // if we are not targeting an enemy, check if there is one in range then target it
             {
                 Last_Enemy_Check_Time = Time.time;
                 Check_For_Enemies_In_Sight();
@@ -32,7 +33,7 @@ public class Support_Bread_Sub : Base_Bread_Class
 
     private void FixedUpdate()
     {
-        if (!Is_Idle && !Dead && Current_Target != null && Current_Target.activeInHierarchy)
+        if (!Dead && Current_Target != null && Current_Target.activeInHierarchy)
         {
             Move_Towards_Target();
         }
@@ -43,11 +44,7 @@ public class Support_Bread_Sub : Base_Bread_Class
     {
         if (Is_Idle)
         {
-            if (!Is_Patrolling)
-            {
-                Patrol_Oven(Patrol_Type, Patrol_Speed);// also controlls ispatrolling conditional, so we only need to check it
-                Is_Idle = false;
-            }
+         
         }
     }
 
