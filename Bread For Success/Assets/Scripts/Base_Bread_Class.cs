@@ -29,6 +29,7 @@ public class Base_Bread_Class : MonoBehaviour
     public int Patrol_Speed;
 
 
+
     //Pathfinding Variables
     public GameObject Current_Target; // make sure to reset when idle because some functions rely on this being null, the basis of all bread control
 
@@ -73,52 +74,29 @@ public class Base_Bread_Class : MonoBehaviour
 
     //GameObjects Arrays For all Map Objects and enemies
     public List<GameObject> Map_Objects; // all objects on map
-    public List<GameObject> Discovered_Map_Objects; // all map objects that you and the breads can see
-    public List<GameObject> Ingredients_On_Map; // all indgredient sources on map
-    public List<GameObject> Materials_On_Map;
-    public List<GameObject> Ingredients_And_Materials_On_Map;
-    public List<GameObject> Flour_Piles;
-    public List<GameObject> Patrol_Points_Close;
-    public List<GameObject> Camps_On_Map;
-    public List<List<GameObject>> All_Map_Object_Lists; // map objects, ingredients, materials, ingredients and materials, flour
-
+    public List<GameObject> Discovered_Active_Map_Objects; // all map objects that the breads know about and have a path to
 
 
     // Conditionals
-    public bool Is_Collecting;
-    public bool Is_Retreating;
     public bool Is_Touching_Flour_Pile;
     public bool Collect_On_Cooldown;
     public bool Deposit_On_Cooldown;
-    public bool Is_Depositing;
-    public bool Is_Idle; // for if our target is ever deleted or somehow gets removed or set inactive
+    public bool Is_Path_Optimizing;
     public bool Is_A_Puss;
-    public bool Is_Patrolling;
     public bool Enemy_In_Sight;
     public bool Dead;
     public bool Looking_For_Enemies_In_Sight;
-    public bool Is_Targeting_Enemy;
-    public bool Is_Targeting_Camp;
     public bool Is_Explorer;
     public bool Is_Attacker;
     public bool Is_Gatherer;
-
+    public bool Is_Home;
+    public string Current_Behavior;
 
     void Start()
     {
         Assign_Components_And_GameObjects();
         Find_Map_Objects();
 
-
-        // for testing, remove later 
-
-        //Current_Target = GameObject.Find("Camp_Example");
-
-        //Current_Target = Oven; // temporary
-
-        //Current_Target = Find_Next_Target(Ingredients_On_Map); // for now, later on switch behavior liike idle to collect ingredientss will set this and call the collect ingredients function
-
-        //Debug.Log(Find_Next_Target(Ingredients_On_Map).name);
     }
 
 
@@ -128,86 +106,11 @@ public class Base_Bread_Class : MonoBehaviour
         My_Rigidbody = gameObject.GetComponent<Rigidbody2D>();
         Oven = GameObject.Find("The_Oven");
 
-        Patrol_Point_Group_0_Parent = GameObject.Find("Patrol_Path_Close");
-
-        foreach (Transform Patrol_Point in Patrol_Point_Group_0_Parent.transform)
-        {
-            Patrol_Points_Close.Add(Patrol_Point.gameObject);
-        }
-
     }
 
 
-    protected void Find_Map_Objects()// all map objects will be children of the Map_Objects Parent objects, so loop through said object and list all
+    protected void Find_Map_Objects()// needs to be much more robust, will change in the near future 
     {
-        All_Map_Object_Lists = new List<List<GameObject>>();
-        GameObject Temp_Map_Reference = GameObject.Find("Map_Objects");
-
-        foreach (Transform child in Temp_Map_Reference.transform) // find all map objects in map_Object gameobject and assign to the array
-        {
-            Debug.Log(child.name);
-
-            Map_Objects.Add(child.gameObject);
-        }
-
-        All_Map_Object_Lists.Add(Map_Objects);
-
-        foreach (GameObject Indgredient in Map_Objects) // assign all flour piles to list
-        {
-            if (Indgredient.CompareTag("Flour_Pile")) //add other indgredient tags 
-            {
-                Ingredients_On_Map.Add(Indgredient.gameObject);
-            }
-        }
-
-        All_Map_Object_Lists.Add(Ingredients_On_Map);
-
-        foreach (GameObject Material in Map_Objects) // assign all flour piles to list
-        {
-            if (Material.CompareTag("Material")) //add other indgredient tags 
-            {
-                Materials_On_Map.Add(Material.gameObject);
-            }
-        }
-
-        All_Map_Object_Lists.Add(Materials_On_Map);
-
-        foreach (GameObject Material_Or_Ingredient in Map_Objects) // assign all flour piles to list
-        {
-            if (Material_Or_Ingredient.CompareTag("Material")) //add other indgredient tags 
-            {
-                Ingredients_And_Materials_On_Map.Add(Material_Or_Ingredient.gameObject);
-            }
-            if (Material_Or_Ingredient.CompareTag("Flour_Pile")) //add other indgredient tags 
-            {
-                Ingredients_And_Materials_On_Map.Add(Material_Or_Ingredient.gameObject);
-            }
-
-        }
-
-        All_Map_Object_Lists.Add(Ingredients_And_Materials_On_Map);
-
-        foreach (GameObject Flour_Pile in Map_Objects) // assign all flour piles to list
-        {
-            if (Flour_Pile.CompareTag("Flour_Pile"))
-            {
-                Flour_Piles.Add(Flour_Pile.gameObject);
-            }
-        }
-
-        All_Map_Object_Lists.Add(Flour_Piles);
-
-        GameObject[] Temp = GameObject.FindGameObjectsWithTag("Camp_(Small)");
-        
-        for(int i = 0; i < Temp.Length; i++)
-        {
-            Camps_On_Map.Add(Temp[i]);
-        }
-
-        All_Map_Object_Lists.Add(Camps_On_Map);
-
-
-        // the rest later
 
     }
 
@@ -227,29 +130,20 @@ public class Base_Bread_Class : MonoBehaviour
     {
         if (Current_Target == null || !(Current_Target.activeInHierarchy))
         {
-            Is_Idle = true;
+            Current_Behavior = "idle";
         }
 
         if (Current_Target != null && Current_Target.CompareTag("Enemy")) 
         {
-            Is_Targeting_Enemy = true;
+            Current_Behavior = "targeting enemy";
         }
        
-        else if(Current_Target == null || !Current_Target.CompareTag("Enemy"))
-        {
-            Is_Targeting_Enemy = false;
-        }
-       
+
         if (Current_Target != null && Current_Target.CompareTag("Camp_(Small)"))
         {
-            Is_Targeting_Camp = true;
+            Current_Behavior = "targeting camp";
         }
         
-        else if (Current_Target == null || !Current_Target.CompareTag("Camp_(Small)"))
-        {
-            Is_Targeting_Camp = false;
-        }
-
 
         if (Health <= 0)
         {
@@ -257,32 +151,32 @@ public class Base_Bread_Class : MonoBehaviour
         }
 
 
-        if (Time.time >= Next_Attack_Time  && Is_Targeting_Enemy) // if our target is an enemy then we start trying to attack it
+        if (Time.time >= Next_Attack_Time  && Current_Behavior == "targeting enemy") // if our target is an enemy then we start trying to attack it
         {
             Attack_Enemy();
         }
 
-        if (Time.time >= Next_Attack_Time && Is_Targeting_Camp) // if our target is an camp then we start trying to attack it
+        if (Time.time >= Next_Attack_Time && Current_Behavior == "targeting camp") // if our target is an camp then we start trying to attack it
         {
             Attack_Camp();
         }
 
-        if (Is_Depositing)
+        if (Current_Behavior == "depositing")
         {
             Deposit_Inventory(); // will be moved elsewhere
         }
 
-        if (Is_Collecting)  //this allows the collection coroutine to run, later collect_Ingredients checks if touching X pile so we do not need an additional safeguard
+        if (Current_Behavior == "collecting")  //this allows the collection coroutine to run, later collect_Ingredients checks if touching X pile so we do not need an additional safeguard
         {
             Collect_Indgredients();
         }
 
-        if ((Health / Max_Health) <= .25f && !Is_Retreating) // will need other checks to make sure bread is healed b4 leaving oven
+        if ((Health / Max_Health) <= .25f && Current_Behavior != "retreating") // will need other checks to make sure bread is healed b4 leaving oven
         {
-            Is_Retreating = true;
+            Current_Behavior = "retreating";
         }
 
-        if (Is_Retreating)
+        if (Current_Behavior == "retreating")
         {
             Retreat_Behavior(); //need to add later
         }
@@ -350,13 +244,13 @@ public class Base_Bread_Class : MonoBehaviour
     //general movement, bread will go to the target then depending on what it comes into cantact with it will flip a conditional that will run a coroutine until the conditional is false or another condition is met
     protected virtual void Move_Towards_Target()
     {
-        if (Mathf.Abs(My_Rigidbody.linearVelocity.x) < Max_Speed && Mathf.Abs(My_Rigidbody.linearVelocity.y) < Max_Speed && !Is_Retreating)
+        if (Mathf.Abs(My_Rigidbody.linearVelocity.x) < Max_Speed && Mathf.Abs(My_Rigidbody.linearVelocity.y) < Max_Speed && Current_Behavior != "retreating")
         {
             Vector2 Normalized_Direction = (Current_Target.transform.position - gameObject.transform.position).normalized;
             My_Rigidbody.AddForce(Normalized_Direction * Acceleration, ForceMode2D.Force);
         }
 
-        else if (My_Rigidbody.linearVelocity.x < (Max_Speed * Retreat_Speed_Mult) && My_Rigidbody.linearVelocity.y < (Max_Speed * Retreat_Speed_Mult) && Is_Retreating) //if we are retreating ise different formula to go faster
+        else if (My_Rigidbody.linearVelocity.x < (Max_Speed * Retreat_Speed_Mult) && My_Rigidbody.linearVelocity.y < (Max_Speed * Retreat_Speed_Mult) && Current_Behavior == "retreating") //if we are retreating ise different formula to go faster
         {
             Vector2 Normalized_Direction = (Current_Target.transform.position - gameObject.transform.position).normalized;
             My_Rigidbody.AddForce(Normalized_Direction * Acceleration * Retreat_Speed_Mult, ForceMode2D.Force);
@@ -395,10 +289,7 @@ public class Base_Bread_Class : MonoBehaviour
 
             else if (inventory_Space == Max_inventory_Space) // we are done depositing
             {
-                Is_Depositing = false;
-                Is_Idle = true;
-                //  Current_Target = Find_Next_Target(Ingredients_On_Map);  //VERY TEMPORARY CHANGE LATER
-                //change behavior to whetaver is next
+                Current_Behavior = "idle";
                 break;
             }
         }
@@ -474,7 +365,7 @@ public class Base_Bread_Class : MonoBehaviour
 
         else if (inventory_Space == 0 || Current_Target == null ||!Current_Target.activeInHierarchy) // return to oven and begin depositing, this will be specified through idle behavior and condition checks in the subclass
         {
-            Is_Idle = true;
+            Current_Behavior = "idle";
         }
     }
 
@@ -513,36 +404,12 @@ public class Base_Bread_Class : MonoBehaviour
     #endregion;
 
     #region Support_Functions
-    protected virtual void Patrol_Oven(int My_Patrol_type, float Patrol_Speed)
+    protected virtual void Patrol_Oven(int My_Patrol_type, float Patrol_Speed) // needs reworked, just copy the enemy patrolling logic
     {
-        Is_Patrolling = true;
-
-        if (Patrol_Type == 0) // patrol close to oven, add more later (Maybe idk yet but leave it open ended)
-        {
-            StartCoroutine(Patrol_Repeating_Routine(Patrol_Points_Close));
-        }
+        Current_Behavior = "patrolling";
 
     }
 
-    protected IEnumerator Patrol_Repeating_Routine(List<GameObject> patrol_Point_Group)
-    {
-        for (; ; )
-        {
-            for (int i = 0; i < patrol_Point_Group.Count; i++)
-            {
-                Current_Target = patrol_Point_Group[i]; // if no enemy, continue to next patrol point, otherwise we just need to end the coroutine to not confuse our poor bread
-
-                yield return new WaitForSeconds(Patrol_Speed + Random.Range(-.5f, .5f)); //bit of randomness for bread looking distinct type shit
-                
-                if(Current_Target != patrol_Point_Group[i])
-                {
-                    Is_Patrolling = false; // allow another patroll routine to start once we are idle again
-                    yield break;
-                }
-            }
-        }
-
-    }
 
     #endregion
 
@@ -577,18 +444,24 @@ public class Base_Bread_Class : MonoBehaviour
         {
             Collect_On_Cooldown = false;
             Is_Touching_Flour_Pile = true;
-            Is_Collecting = true;
+            Current_Behavior = "collecting flour";
         }
         else if (collision.CompareTag("Oven"))
         {
+            Is_Home = true; 
+
             Deposit_On_Cooldown = false;
 
             if (inventory_Space < Max_inventory_Space)
             {
-                Is_Depositing = true;
+                Current_Behavior = "depositing";
             }
 
-            Is_Retreating = false;
+        }
+
+        else if (collision.CompareTag("Fog_Of_War"))
+        {
+            collision.gameObject.SetActive(false);
         }
     }
 
@@ -598,11 +471,10 @@ public class Base_Bread_Class : MonoBehaviour
         {
             Collect_On_Cooldown = false;
             Is_Touching_Flour_Pile = false;
-            Is_Collecting = false;
         }
         else if (collision.CompareTag("Oven"))
         {
-            Is_Depositing = false;
+            Is_Home = false;
         }
 
     }

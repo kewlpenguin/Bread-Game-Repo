@@ -13,7 +13,7 @@ public class Attacker_Bread_Sub : Base_Bread_Class
     {
         Assign_Components_And_GameObjects();
         Find_Map_Objects();
-        Is_Idle = true;
+        Current_Behavior = "idle";
     }
 
 
@@ -28,7 +28,7 @@ public class Attacker_Bread_Sub : Base_Bread_Class
             Base_Bread_Operation_Function_Calls(); // includes die check, current target check, depositing check, collecting check, and retreat threshold check. is idle will be set to true if our current target is not active
             Attacker_Behavior();
             
-            if (!Is_Targeting_Enemy && (Time.time - Last_Enemy_Check_Time) > Enemy_In_Sight_Range_Check_Delay ) // if we are not targeting an enemy, check if there is one in range then target it
+            if (Current_Behavior == "targeting enemy" && (Time.time - Last_Enemy_Check_Time) > Enemy_In_Sight_Range_Check_Delay ) // if we are not targeting an enemy, check if there is one in range then target it
             {
                 Last_Enemy_Check_Time = Time.time;
                 Check_For_Enemies_In_Sight();
@@ -46,15 +46,9 @@ public class Attacker_Bread_Sub : Base_Bread_Class
 
     private void Attacker_Behavior()
     {
-        if (Is_Idle)
+        if (Current_Behavior == "idle")
         {
-           Current_Target =  Find_Next_Target(Camps_On_Map);
-           
-            if (Current_Target.activeInHierarchy)
-            {
-                 Is_Idle = false;
-            }
-            else if (!Current_Target.activeInHierarchy && !Is_Targeting_Enemy) //!!!!!!!!!this needs changed bc it will lag the shit outta everything, just make them explore or sum idk yet
+            if (!Current_Target.activeInHierarchy && Current_Behavior != "targeting enemy") //!!!!!!!!!this needs changed bc 
             {
                 Current_Target = Oven;
             }

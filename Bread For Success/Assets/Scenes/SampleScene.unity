@@ -56934,11 +56934,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 558974238056282971, guid: 91d7aba38b914634b9287aea57d6aafa, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -39.463654
+      value: -40.7
       objectReference: {fileID: 0}
     - target: {fileID: 558974238056282971, guid: 91d7aba38b914634b9287aea57d6aafa, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.0285482
+      value: 6.8
       objectReference: {fileID: 0}
     - target: {fileID: 558974238056282971, guid: 91d7aba38b914634b9287aea57d6aafa, type: 3}
       propertyPath: m_LocalPosition.z
@@ -56980,9 +56980,17 @@ PrefabInstance:
       propertyPath: Leash_Distance
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 1975149205734874545, guid: 91d7aba38b914634b9287aea57d6aafa, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2129323383481715349, guid: 91d7aba38b914634b9287aea57d6aafa, type: 3}
       propertyPath: m_Name
       value: Tile_Prefab_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5575404446924949134, guid: 91d7aba38b914634b9287aea57d6aafa, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

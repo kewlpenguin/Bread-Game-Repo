@@ -12,7 +12,7 @@ public class Gatherer_Bread_Sub : Base_Bread_Class
     {
         Assign_Components_And_GameObjects();
         Find_Map_Objects();
-        Is_Idle = true;
+        Current_Behavior = "idle";
     }
 
     // Update is called once per frame
@@ -36,26 +36,25 @@ public class Gatherer_Bread_Sub : Base_Bread_Class
 
     private void Collector_Behavior()
     {
-        if (Is_Idle)
+        if (Current_Behavior == "idle")
         {
             if(inventory_Space == 0)
             {
                 Current_Target = Oven;
-                Is_Idle = false;
+                Current_Behavior = "going home";
             }
             
-            else if (inventory_Space > 0)
+            else if (inventory_Space > 0) //needs updated when we get a better way to fill the map objects list
             {
-                Current_Target = Find_Next_Target(All_Map_Object_Lists[4]); // temp, will be random or contolled by traits later
                 if (Current_Target.activeInHierarchy)
                 {
-                    Is_Idle = false;
+                    Current_Behavior = "idle";
                 }
 
                 else if (!(Current_Target.activeInHierarchy)) // shit to to so we are not idle
                 {
                     Current_Target = Oven;
-                    Is_Idle = false;
+                    Current_Behavior = "going home";
                 }
             }
         }

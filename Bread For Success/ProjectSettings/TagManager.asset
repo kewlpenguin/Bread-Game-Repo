@@ -11,6 +11,7 @@ TagManager:
   - Enemy
   - Camp_(Small)
   - Grass_Grid
+  - Fog_Of_War
   layers:
   - Default
   - TransparentFX
@@ -63,7 +64,7 @@ TagManager:
   - name: Effects and such
     uniqueID: 3161049783
     locked: 0
-  - name: New Layer 7
+  - name: Fog_Of_War
     uniqueID: 3885307345
     locked: 0
   m_RenderingLayers:
