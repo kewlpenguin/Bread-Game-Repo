@@ -5,6 +5,9 @@ using System.Collections;
 using System.Collections.Generic;
 public class Explorer_Bread_Sub : Base_Bread_Class
 {
+    List<GameObject> Current_Path_Seek_Point_Storage = new List<GameObject>(0);
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -69,23 +72,49 @@ public class Explorer_Bread_Sub : Base_Bread_Class
     public void Search_For_Locations_Of_Interest()
     {
         Current_Behavior = "searching";
-        GameObject[] Square_To_Explore = GameObject.FindGameObjectsWithTag("Fog_Of_War");
+
+        Collider2D[] Nearby_Locations_Of_Interest = Physics2D.OverlapCircleAll(transform.position, Sight_Range, (1 << 7)); // need to limit this to only the breads layer somehow
+
+        //need to check if object in sight has been discovered yet or not, if it has not then we need to placenextseekpointtowardstargetand feed it the reference to the undiscovered object
+        //if we are touching the undiscovered object then the onTriggerEnter2D function in the base bread class will set our current_Behavior to "is touching object of interest"
+        //also if this finds an undiscovered object we dont want to run the rest of this function so just return after seting our current target.
+        //we will also add a function in update for when we run into an object of interest that has not yet been discovered that will save our path GameObjects in the 
+        //game manager singleton before having our current behavior be to "follow return path" which will proc another if inside of update that will look at the last object
+        //we were targeting or something and look for its path object list and seek them out in reverse, idk how yet
+
+        GameObject[] Squares_To_Explore = GameObject.FindGameObjectsWithTag("Fog_Of_War");
         List<GameObject> Fog_Tiles = new List<GameObject>(0);
 
-        foreach(GameObject Fog_Tile in Square_To_Explore)
+        foreach(GameObject Fog_Tile in Squares_To_Explore)
         {
             Fog_Tiles.Add(Fog_Tile);
         }
 
-        Current_Target = Find_Next_Target(Fog_Tiles);
+        Current_Target = Place_Next_Seek_Point_Towards_Target(Fog_Tiles[1]);
     }
 
     public void Optimize_Path()
     {
         Current_Behavior = "idle"; // for now, will add actual optimization stuff later
 
+    }
 
+    public GameObject Place_Next_Seek_Point_Towards_Target(GameObject Target_Fog_Tile, float Step_Distance = 1, float Step_Rotation_Variance = 1) 
+    {
+
+        Vector2 Target_Directional_Vector = (gameObject.transform.position - Target_Fog_Tile.transform.position).normalized;
+
+        // Calculate where to put the object
+        Vector2 Next_Seek_Point_Position = (Vector2) gameObject.transform.position + (Target_Directional_Vector * Step_Distance);
+
+        GameObject Next_Seek_Point_Ref = Instantiate(Seek_Point_Prefab, Next_Seek_Point_Position, gameObject.transform.rotation);
+
+        Current_Path_Seek_Point_Storage.Add(Next_Seek_Point_Ref);
+
+        return Next_Seek_Point_Ref;
 
     }
+
+
 
 }

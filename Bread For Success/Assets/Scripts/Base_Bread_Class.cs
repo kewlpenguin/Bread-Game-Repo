@@ -32,7 +32,7 @@ public class Base_Bread_Class : MonoBehaviour
 
     //Pathfinding Variables
     public GameObject Current_Target; // make sure to reset when idle because some functions rely on this being null, the basis of all bread control
-
+    public GameObject Seek_Point_Prefab;
 
     //speed stats
     public float Acceleration;
@@ -440,15 +440,9 @@ public class Base_Bread_Class : MonoBehaviour
     #region OnTriggerEnters
     protected void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Flour_Pile"))
+        if (collision.CompareTag("Oven"))
         {
-            Collect_On_Cooldown = false;
-            Is_Touching_Flour_Pile = true;
-            Current_Behavior = "collecting flour";
-        }
-        else if (collision.CompareTag("Oven"))
-        {
-            Is_Home = true; 
+            Is_Home = true;
 
             Deposit_On_Cooldown = false;
 
@@ -463,6 +457,33 @@ public class Base_Bread_Class : MonoBehaviour
         {
             collision.gameObject.SetActive(false);
         }
+
+        else if (collision.CompareTag("Seek_Point_Bread"))
+        {
+            Current_Behavior = "waiting for next seek point";
+        }
+
+        else if (collision.CompareTag("Flour_Pile") && Is_Gatherer)
+        {
+            Collect_On_Cooldown = false;
+            Is_Touching_Flour_Pile = true;
+            Current_Behavior = "is gathering";
+        }
+
+        else if(collision.CompareTag("Flour_Pile") && Is_Explorer)
+        {
+            Current_Behavior = "is touching object of interest";
+        }
+
+
+
+        else if (collision.CompareTag("Camp_(Small)") && Is_Explorer)
+        {
+            Current_Behavior = "is touching object of interest";
+        }
+
+
+
     }
 
     protected void OnTriggerExit2D(Collider2D collision)

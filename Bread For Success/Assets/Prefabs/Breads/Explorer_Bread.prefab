@@ -196,6 +196,7 @@ MonoBehaviour:
   Patrol_Type: 0
   Patrol_Speed: 0
   Current_Target: {fileID: 0}
+  Seek_Point_Prefab: {fileID: 600972777281960867, guid: b574c2f1c1a9a884b8e0fd39e5d599f1, type: 3}
   Acceleration: 0
   Max_Speed: 0
   Retreat_Speed_Mult: 0
@@ -208,7 +209,6 @@ MonoBehaviour:
   Max_inventory_Space: 0
   inventory_Space: 0
   Flour_In_Inventory: 0
-  Collection_Progress: 0
   Deposit_Speed: 0
   Deposit_Quantity: 0
   Health: 0
@@ -216,26 +216,20 @@ MonoBehaviour:
   Damage: 0
   Knockback: 0
   Attack_Speed: 0
-  Next_Attack_Time: 0
-  Next_AttackCheck_Time: 0
   Attack_Range: 0
+  Death_Anim_Length: 0
   Map_Objects: []
-  Discovered_Map_Objects: []
-  Ingredients_On_Map: []
-  Materials_On_Map: []
-  Ingredients_And_Materials_On_Map: []
-  Flour_Piles: []
-  Patrol_Points_Close: []
-  Camps_On_Map: []
-  Is_Collecting: 0
-  Is_Retreating: 0
+  Discovered_Active_Map_Objects: []
   Is_Touching_Flour_Pile: 0
   Collect_On_Cooldown: 0
   Deposit_On_Cooldown: 0
-  Is_Depositing: 0
-  Is_Idle: 0
+  Is_Path_Optimizing: 0
   Is_A_Puss: 0
-  Is_Patrolling: 0
   Enemy_In_Sight: 0
   Dead: 0
   Looking_For_Enemies_In_Sight: 0
+  Is_Explorer: 0
+  Is_Attacker: 0
+  Is_Gatherer: 0
+  Is_Home: 0
+  Current_Behavior: 

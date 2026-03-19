@@ -12,6 +12,7 @@ TagManager:
   - Camp_(Small)
   - Grass_Grid
   - Fog_Of_War
+  - Seek_Point_Bread
   layers:
   - Default
   - TransparentFX

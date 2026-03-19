@@ -15,7 +15,8 @@ public class Game_Controller_Singleton : MonoBehaviour
     public GameObject Enemy_Prefab;
     public int Seek_Empty_Gameobject_ID;
 
-
+    // GameObject lists
+    List<Path_Class> Bread_Paths = new List<Path_Class>(0); 
 
 
 
