@@ -17,7 +17,7 @@ public class Base_Bread_Class : MonoBehaviour
     //GameObject References
     protected GameObject Oven;
     protected GameObject Patrol_Point_Group_0_Parent;
-
+    protected GameObject Game_Controller_Singleton;
 
     //Components
     protected Rigidbody2D My_Rigidbody;
@@ -27,8 +27,9 @@ public class Base_Bread_Class : MonoBehaviour
     public float Sight_Range;
     public int Patrol_Type;
     public int Patrol_Speed;
-
-
+    public float Step_Distance;
+    public float Step_Rotation_Variance;
+    public GameObject Fog_Tile_Target;
 
     //Pathfinding Variables
     public GameObject Current_Target; // make sure to reset when idle because some functions rely on this being null, the basis of all bread control
@@ -105,7 +106,7 @@ public class Base_Bread_Class : MonoBehaviour
     {
         My_Rigidbody = gameObject.GetComponent<Rigidbody2D>();
         Oven = GameObject.Find("The_Oven");
-
+        Game_Controller_Singleton = GameObject.Find("Game_Controller (and Memory)");
     }
 
 

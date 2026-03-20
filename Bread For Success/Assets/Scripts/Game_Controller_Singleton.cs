@@ -14,9 +14,9 @@ public class Game_Controller_Singleton : MonoBehaviour
     public GameObject Camp_Prefab;
     public GameObject Enemy_Prefab;
     public int Seek_Empty_Gameobject_ID;
-
+    public int Number_Of_Paths;
     // GameObject lists
-    List<Path_Class> Bread_Paths = new List<Path_Class>(0); 
+    public List<Path_Class> Bread_Paths = new List<Path_Class>(0); 
 
 
 

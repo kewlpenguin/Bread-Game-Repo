@@ -4229,11 +4229,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7681956382354753707, guid: 254e42467f28fd04f8f9e8205e168af2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -17.79
+      value: -38.44
       objectReference: {fileID: 0}
     - target: {fileID: 7681956382354753707, guid: 254e42467f28fd04f8f9e8205e168af2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.42566
+      value: 22.04
       objectReference: {fileID: 0}
     - target: {fileID: 7681956382354753707, guid: 254e42467f28fd04f8f9e8205e168af2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -66778,6 +66778,10 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7381750973614786032, guid: d928676ad08f8764094e639b413056ad, type: 3}
+      propertyPath: Step_Distance
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7381750973614786032, guid: d928676ad08f8764094e639b413056ad, type: 3}
       propertyPath: inventory_Space
       value: 1
       objectReference: {fileID: 0}
@@ -70314,6 +70318,8 @@ MonoBehaviour:
   Camp_Prefab: {fileID: 2904978809279393663, guid: 16071ccb352be034ca5be37a63d154dd, type: 3}
   Enemy_Prefab: {fileID: 6438437492391398424, guid: 3f7f87238f483374bbfa420d329181ac, type: 3}
   Seek_Empty_Gameobject_ID: 0
+  Number_Of_Paths: 0
+  Bread_Paths: []
 --- !u!4 &2099160097
 Transform:
   m_ObjectHideFlags: 0
@@ -72126,7 +72132,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7681956382354753707, guid: 254e42467f28fd04f8f9e8205e168af2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 13.78
+      value: 36.83
       objectReference: {fileID: 0}
     - target: {fileID: 7681956382354753707, guid: 254e42467f28fd04f8f9e8205e168af2, type: 3}
       propertyPath: m_LocalPosition.y
