@@ -30,6 +30,9 @@ public class Base_Bread_Class : MonoBehaviour
     public float Step_Distance;
     public float Step_Rotation_Variance;
     public GameObject Fog_Tile_Target;
+    public Path_Class Path_Following = null;
+    public int Current_Path_Point_Number;
+    public int Next_Path_Point_Number;
 
     //Pathfinding Variables
     public GameObject Current_Target; // make sure to reset when idle because some functions rely on this being null, the basis of all bread control
@@ -451,6 +454,10 @@ public class Base_Bread_Class : MonoBehaviour
             {
                 Current_Behavior = "depositing";
             }
+            if(Current_Behavior == "going to next path point back" && Is_Explorer)
+            {
+                Current_Behavior = "idle";
+            }
 
         }
 
@@ -461,28 +468,38 @@ public class Base_Bread_Class : MonoBehaviour
 
         else if (collision.CompareTag("Seek_Point_Bread"))
         {
-            Current_Behavior = "waiting for next seek point";
+            if (Current_Behavior == "searching")
+            {
+                Current_Behavior = "waiting for next seek point";
+            }   
+
+            if (Current_Behavior == "going to next path point back")
+            {
+                if (Next_Path_Point_Number >= 0)
+                {
+                    Current_Target = Path_Following.Path_Points[Next_Path_Point_Number];
+                    Current_Path_Point_Number--;
+                    Next_Path_Point_Number--;
+                }
+                else { Current_Target = Oven; }
+            }
         }
 
-        else if (collision.CompareTag("Flour_Pile") && Is_Gatherer)
+        else if (collision.CompareTag("Flour_Pile"))
         {
-            Collect_On_Cooldown = false;
-            Is_Touching_Flour_Pile = true;
-            Current_Behavior = "is gathering";
+            if (Is_Gatherer)
+            {
+                Collect_On_Cooldown = false;
+                Is_Touching_Flour_Pile = true;
+                Current_Behavior = "is gathering";
+            }
+            if (Is_Explorer && Current_Behavior == "going to next path point back")
+            {
+                Current_Target = Path_Following.Path_Points[Next_Path_Point_Number];
+                Current_Path_Point_Number--;
+                Next_Path_Point_Number--;
+            }
         }
-
-        else if(collision.CompareTag("Flour_Pile") && Is_Explorer)
-        {
-            Current_Behavior = "is touching object of interest";
-        }
-
-
-
-        else if (collision.CompareTag("Camp_(Small)") && Is_Explorer)
-        {
-            Current_Behavior = "is touching object of interest";
-        }
-
 
 
     }

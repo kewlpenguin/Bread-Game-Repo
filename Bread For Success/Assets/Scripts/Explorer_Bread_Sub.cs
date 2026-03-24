@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class Explorer_Bread_Sub : Base_Bread_Class
 {
     List<GameObject> Current_Path_Seek_Point_Storage = new List<GameObject>(0);
-
+    
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -64,9 +64,25 @@ public class Explorer_Bread_Sub : Base_Bread_Class
         {
             Search_For_Locations_Of_Interest();
         }
+
+        if (Current_Behavior == "following path back to oven") // at this point we are still targeting the object of interest so we can iterate through all stored bread paths checking the target object 
+        {
+            foreach (Path_Class Path in Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Bread_Paths)
+            {
+                if (Path.Target_GameObject == Current_Target)
+                {
+                    Path_Following = Path;
+                    Current_Target = Path.Path_Points[Path.Path_Points.Count - 1];
+
+                    Current_Path_Point_Number = (Path.Path_Points.Count - 1);
+                    Next_Path_Point_Number = (Path.Path_Points.Count - 2);
+
+                    Current_Behavior = "going to next path point back";
+                }
+            }
+        }
+
     }
-
-
 
 
     // my idea right now is our explorers do not know where these locations of interest are but they know where the fog of war is, so 
@@ -128,6 +144,8 @@ public class Explorer_Bread_Sub : Base_Bread_Class
                     Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Bread_Paths.Add(Path_To_Store); // actually store the path in game controllers memory
                     Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Number_Of_Paths++;
 
+                    Current_Behavior = "following path back to oven";
+
                     return;
                 }
 
@@ -143,7 +161,7 @@ public class Explorer_Bread_Sub : Base_Bread_Class
         //game manager singleton before having our current behavior be to "follow return path" which will proc another if inside of update that will look at the last object
         //we were targeting or something and look for its path object list and seek them out in reverse, idk how yet
 
-        if (Fog_Tile_Target == null)
+        if (Fog_Tile_Target == null || !Fog_Tile_Target.activeInHierarchy)
         {
             GameObject[] Squares_To_Explore = GameObject.FindGameObjectsWithTag("Fog_Of_War"); //find all fog tiles
             List<GameObject> Fog_Tiles = new List<GameObject>(0);
@@ -153,7 +171,9 @@ public class Explorer_Bread_Sub : Base_Bread_Class
                 Fog_Tiles.Add(Fog_Tile);
             }
 
-            Current_Target = Place_Next_Seek_Point_Towards_Target(Fog_Tiles[1], false, Step_Distance, Step_Rotation_Variance); // the first tile in the list we will seek point towards until we reach it then we will target another one 
+            GameObject Closest_Fog_Tile = Find_Next_Target(Fog_Tiles);
+
+            Current_Target = Place_Next_Seek_Point_Towards_Target(Closest_Fog_Tile, false, Step_Distance, Step_Rotation_Variance); // the first tile in the list we will seek point towards until we reach it then we will target another one 
                                                                                                                                //will need some kind of distance check in the future to try to go to the closest one
             Fog_Tile_Target = Fog_Tiles[1];
         }
