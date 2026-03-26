@@ -78,7 +78,7 @@ public class Base_Bread_Class : MonoBehaviour
 
     //GameObjects Arrays For all Map Objects and enemies
     public List<GameObject> Map_Objects; // all objects on map
-    public List<GameObject> Discovered_Active_Map_Objects; // all map objects that the breads know about and have a path to
+ 
 
 
     // Conditionals
@@ -468,7 +468,7 @@ public class Base_Bread_Class : MonoBehaviour
 
         else if (collision.CompareTag("Seek_Point_Bread"))
         {
-            if (Current_Behavior == "searching")
+            if (Current_Behavior == "searching" && collision.GetComponent<Seek_Point_Info>().Object_Of_Origin == gameObject) // the second condition  makes it so that we only react to our own points
             {
                 Current_Behavior = "waiting for next seek point";
             }   

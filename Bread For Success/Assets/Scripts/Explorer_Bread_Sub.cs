@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class Explorer_Bread_Sub : Base_Bread_Class
 {
     List<GameObject> Current_Path_Seek_Point_Storage = new List<GameObject>(0);
-    
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -34,14 +34,20 @@ public class Explorer_Bread_Sub : Base_Bread_Class
         {
             Move_Towards_Target();
         }
-
+        if (Dead)
+        {
+            foreach (GameObject Seek_Point in Current_Path_Seek_Point_Storage)
+            {
+                Destroy(Seek_Point);
+            }
+        }
     }
 
     private void Explore_Behaviors()
     {
         if (Current_Behavior == "idle")
         {
-            if (Discovered_Active_Map_Objects == null)
+            if (Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Discovered_Active_Map_Objects == null)
             {
                 Search_For_Locations_Of_Interest();
             }
@@ -100,9 +106,9 @@ public class Explorer_Bread_Sub : Base_Bread_Class
         {
             foreach (Collider2D Location_Nearby in Nearby_Locations_Of_Interest)
             {
-                if (!Discovered_Active_Map_Objects.Contains(Location_Nearby.gameObject)) // if we do not have the location in the known locations list then add it and save the route
+                if (!Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Discovered_Active_Map_Objects.Contains(Location_Nearby.gameObject)) // if we do not have the location in the known locations list then add it and save the route
                 {
-                    Discovered_Active_Map_Objects.Add(Location_Nearby.gameObject);
+                    Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Discovered_Active_Map_Objects.Add(Location_Nearby.gameObject);
 
                     List<GameObject> Temp_Path_Storage = new List<GameObject>(0);
 
@@ -111,6 +117,10 @@ public class Explorer_Bread_Sub : Base_Bread_Class
                     foreach (GameObject Seek_Point_To_Reach_Destination in Current_Path_Seek_Point_Storage) // assign all stored stepping stone pathing targets as a temp path
                     {
                         Temp_Path_Storage.Add(Seek_Point_To_Reach_Destination);
+                        if (Location_Nearby != null)
+                        {
+                            Seek_Point_To_Reach_Destination.GetComponent<Seek_Point_Info>().Insert_Point_Data(gameObject, Location_Nearby.gameObject);
+                        }
                     }
 
                     Path_Class Path_To_Store = new Path_Class(); // create the path class aka the storage mechanism to put the path into game_controller
@@ -144,11 +154,22 @@ public class Explorer_Bread_Sub : Base_Bread_Class
                     Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Bread_Paths.Add(Path_To_Store); // actually store the path in game controllers memory
                     Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Number_Of_Paths++;
 
+                    Current_Path_Seek_Point_Storage = new List<GameObject>(0); // after we assign the path to permanent memory, delete our temporary memory and start over
+
                     Current_Behavior = "following path back to oven";
 
                     return;
                 }
 
+                else if (Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Discovered_Active_Map_Objects.Contains(Location_Nearby.gameObject))
+                {
+                    Current_Target = Place_Next_Seek_Point_Towards_Target(Location_Nearby.gameObject, true);
+
+                    Current_Path_Seek_Point_Storage = new List<GameObject>(0); // So technically at this point we have an entire proper path saved but instead of saving it, we will wipe it
+                    // before returning to the oven because the object already has a path, may change this later/ add an additional condition for path optimizers
+
+                    Current_Behavior = "following path back to oven";
+                }
             }
         }
 
@@ -174,7 +195,7 @@ public class Explorer_Bread_Sub : Base_Bread_Class
             GameObject Closest_Fog_Tile = Find_Next_Target(Fog_Tiles);
 
             Current_Target = Place_Next_Seek_Point_Towards_Target(Closest_Fog_Tile, false, Step_Distance, Step_Rotation_Variance); // the first tile in the list we will seek point towards until we reach it then we will target another one 
-                                                                                                                               //will need some kind of distance check in the future to try to go to the closest one
+                                                                                                                                   //will need some kind of distance check in the future to try to go to the closest one
             Fog_Tile_Target = Fog_Tiles[1];
         }
         else
@@ -204,6 +225,12 @@ public class Explorer_Bread_Sub : Base_Bread_Class
         Vector2 Next_Seek_Point_Position = (Vector2)gameObject.transform.position + (Target_Directional_Vector * Step_Distance);
 
         GameObject Next_Seek_Point_Ref = Instantiate(Seek_Point_Prefab, Next_Seek_Point_Position, gameObject.transform.rotation);
+
+        Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Seek_Empty_Gameobject_ID++; // we do not need to give the new seek point its information because it has its own methods
+                                                                                                        //for this inside seek_Point_Info
+        Next_Seek_Point_Ref.GetComponent<Seek_Point_Info>().Object_Of_Origin = gameObject;
+
+        Next_Seek_Point_Ref.GetComponent<Seek_Point_Info>().Insert_Point_Data(gameObject);
 
         Current_Path_Seek_Point_Storage.Add(Next_Seek_Point_Ref);
 

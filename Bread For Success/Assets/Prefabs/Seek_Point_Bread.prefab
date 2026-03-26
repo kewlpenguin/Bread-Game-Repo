@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7176374071559111019}
   - component: {fileID: -7001442013420541278}
   - component: {fileID: 2461774839129134040}
+  - component: {fileID: 6304543602554670204}
   m_Layer: 0
   m_Name: Seek_Point_Bread
   m_TagString: Seek_Point_Bread
@@ -93,6 +94,19 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &6304543602554670204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600972777281960867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f820d883b82b4004eb7fe04eb7eddcb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Seek_Point_Info
+  Point_ID: 0
 --- !u!1 &3701057018438275716
 GameObject:
   m_ObjectHideFlags: 0
