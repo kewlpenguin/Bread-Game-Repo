@@ -117,10 +117,6 @@ public class Explorer_Bread_Sub : Base_Bread_Class
                     foreach (GameObject Seek_Point_To_Reach_Destination in Current_Path_Seek_Point_Storage) // assign all stored stepping stone pathing targets as a temp path
                     {
                         Temp_Path_Storage.Add(Seek_Point_To_Reach_Destination);
-                        if (Location_Nearby != null)
-                        {
-                            Seek_Point_To_Reach_Destination.GetComponent<Seek_Point_Info>().Insert_Point_Data(gameObject, Location_Nearby.gameObject);
-                        }
                     }
 
                     Path_Class Path_To_Store = new Path_Class(); // create the path class aka the storage mechanism to put the path into game_controller
@@ -226,16 +222,14 @@ public class Explorer_Bread_Sub : Base_Bread_Class
 
         GameObject Next_Seek_Point_Ref = Instantiate(Seek_Point_Prefab, Next_Seek_Point_Position, gameObject.transform.rotation);
 
-        Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Seek_Empty_Gameobject_ID++; // we do not need to give the new seek point its information because it has its own methods
-                                                                                                        //for this inside seek_Point_Info
         Next_Seek_Point_Ref.GetComponent<Seek_Point_Info>().Object_Of_Origin = gameObject;
 
-        Next_Seek_Point_Ref.GetComponent<Seek_Point_Info>().Insert_Point_Data(gameObject);
+        Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Seek_Empty_Gameobject_ID++; // we do not need to give the new seek point its information because it has its own methods
+                                                                                                        //for this inside seek_Point_Info
 
         Current_Path_Seek_Point_Storage.Add(Next_Seek_Point_Ref);
 
         return Next_Seek_Point_Ref;
-
     }
 
 
