@@ -34,11 +34,12 @@ public class Explorer_Bread_Sub : Base_Bread_Class
         {
             Move_Towards_Target();
         }
+
         if (Dead)
         {
             foreach (GameObject Seek_Point in Current_Path_Seek_Point_Storage)
             {
-                Destroy(Seek_Point);
+                Destroy(Seek_Point, 1);
             }
         }
     }
@@ -71,23 +72,25 @@ public class Explorer_Bread_Sub : Base_Bread_Class
             Search_For_Locations_Of_Interest();
         }
 
-        if (Current_Behavior == "following path back to oven") // at this point we are still targeting the object of interest so we can iterate through all stored bread paths checking the target object 
+        if (Current_Behavior == "found new map object following path back to oven") // at this point we are still targeting the object of interest so we can iterate through all stored bread paths checking the target object 
         {
             foreach (Path_Class Path in Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Bread_Paths)
             {
-                if (Path.Target_GameObject == Current_Target)
+                if (Path.Target_GameObject == Current_Target) // look for the stored path that we just created based on our current target
                 {
                     Path_Following = Path;
                     Current_Target = Path.Path_Points[Path.Path_Points.Count - 1];
-
-                    Current_Path_Point_Number = (Path.Path_Points.Count - 1);
-                    Next_Path_Point_Number = (Path.Path_Points.Count - 2);
 
                     Current_Behavior = "going to next path point back";
                 }
             }
         }
 
+        if (Current_Behavior == "following path back to oven") // at this point we are still targeting the object of interest so we can iterate through all stored bread paths checking the target object 
+        {
+            Current_Target = Current_Path_Seek_Point_Storage[Current_Path_Seek_Point_Storage.Count - 1];
+            Current_Behavior = "going to next path point back";
+        }
     }
 
 
@@ -152,19 +155,15 @@ public class Explorer_Bread_Sub : Base_Bread_Class
 
                     Current_Path_Seek_Point_Storage = new List<GameObject>(0); // after we assign the path to permanent memory, delete our temporary memory and start over
 
-                    Current_Behavior = "following path back to oven";
+                    Current_Behavior = "found new map object following path back to oven";
 
                     return;
                 }
 
                 else if (Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Discovered_Active_Map_Objects.Contains(Location_Nearby.gameObject))
                 {
-                    Current_Target = Place_Next_Seek_Point_Towards_Target(Location_Nearby.gameObject, true);
+                    Current_Target = Place_Next_Seek_Point_Towards_Target(Location_Nearby.gameObject, false);
 
-                    Current_Path_Seek_Point_Storage = new List<GameObject>(0); // So technically at this point we have an entire proper path saved but instead of saving it, we will wipe it
-                    // before returning to the oven because the object already has a path, may change this later/ add an additional condition for path optimizers
-
-                    Current_Behavior = "following path back to oven";
                 }
             }
         }
@@ -207,6 +206,7 @@ public class Explorer_Bread_Sub : Base_Bread_Class
 
     }
 
+
     public GameObject Place_Next_Seek_Point_Towards_Target(GameObject Target, bool Is_In_Range_Of_Object_Of_Interest = false, float Step_Distance = 10, float Step_Rotation_Variance = 5)
     {
         if (Is_In_Range_Of_Object_Of_Interest)
@@ -221,8 +221,23 @@ public class Explorer_Bread_Sub : Base_Bread_Class
         Vector2 Next_Seek_Point_Position = (Vector2)gameObject.transform.position + (Target_Directional_Vector * Step_Distance);
 
         GameObject Next_Seek_Point_Ref = Instantiate(Seek_Point_Prefab, Next_Seek_Point_Position, gameObject.transform.rotation);
+        
+        Seek_Point_Registry.Register(Next_Seek_Point_Ref, gameObject);
 
-        Next_Seek_Point_Ref.GetComponent<Seek_Point_Info>().Object_Of_Origin = gameObject;
+
+        if(Current_Path_Seek_Point_Storage.Count == 0)
+        {
+            Seek_Point_Registry.Register_Previous_Seek_Point(Oven, Next_Seek_Point_Ref); // if this is the first point then make the previous of this the oven
+        }
+
+        else if(Current_Path_Seek_Point_Storage.Count > 0)
+        {
+            Seek_Point_Registry.Register_Previous_Seek_Point(Current_Path_Seek_Point_Storage[Current_Path_Seek_Point_Storage.Count - 1], Next_Seek_Point_Ref);
+        }
+        // the plan here is to feed the most recent point into the next point as the previous point
+
+
+        Seek_Point_Registry.DebugLogAll();
 
         Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Seek_Empty_Gameobject_ID++; // we do not need to give the new seek point its information because it has its own methods
                                                                                                         //for this inside seek_Point_Info

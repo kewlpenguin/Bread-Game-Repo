@@ -31,8 +31,6 @@ public class Base_Bread_Class : MonoBehaviour
     public float Step_Rotation_Variance;
     public GameObject Fog_Tile_Target;
     public Path_Class Path_Following = null;
-    public int Current_Path_Point_Number;
-    public int Next_Path_Point_Number;
 
     //Pathfinding Variables
     public GameObject Current_Target; // make sure to reset when idle because some functions rely on this being null, the basis of all bread control
@@ -454,6 +452,7 @@ public class Base_Bread_Class : MonoBehaviour
             {
                 Current_Behavior = "depositing";
             }
+
             if(Current_Behavior == "going to next path point back" && Is_Explorer)
             {
                 Current_Behavior = "idle";
@@ -466,24 +465,26 @@ public class Base_Bread_Class : MonoBehaviour
             collision.gameObject.SetActive(false);
         }
 
-        else if (collision.CompareTag("Seek_Point_Bread"))
+
+        else if (collision.CompareTag("Seek_Point_Bread") && collision.gameObject == Current_Target)
         {
-            if (Current_Behavior == "searching" && collision.GetComponent<Seek_Point_Info>().Object_Of_Origin == gameObject) // the second condition  makes it so that we only react to our own points
+            if (Current_Behavior == "searching" && collision.GetComponent<Seek_Point_Info>().GetCreator() == gameObject) // the second condition  makes it so that we only react to our own points
             {
                 Current_Behavior = "waiting for next seek point";
             }   
 
             if (Current_Behavior == "going to next path point back")
             {
-                if (Next_Path_Point_Number >= 0)
-                {
-                    Current_Target = Path_Following.Path_Points[Next_Path_Point_Number];
-                    Current_Path_Point_Number--;
-                    Next_Path_Point_Number--;
+                if (Seek_Point_Registry.Seek_Point_To_Previous_Seek_Point.ContainsKey(Current_Target)) // if the seek point we are targeting ( which we know we are targeting) contains a previous
+                {  // then set it as the current target
+
+                    Seek_Point_Registry.Seek_Point_To_Previous_Seek_Point.TryGetValue(Current_Target, out GameObject Previous_Point_To_Target);
+
+                    Current_Target = Previous_Point_To_Target;
                 }
-                else { Current_Target = Oven; }
             }
         }
+
 
         else if (collision.CompareTag("Flour_Pile"))
         {
@@ -495,9 +496,7 @@ public class Base_Bread_Class : MonoBehaviour
             }
             if (Is_Explorer && Current_Behavior == "going to next path point back")
             {
-                Current_Target = Path_Following.Path_Points[Next_Path_Point_Number];
-                Current_Path_Point_Number--;
-                Next_Path_Point_Number--;
+                Current_Target = Path_Following.Path_Points[Path_Following.Path_Points.Count - 2];
             }
         }
 
