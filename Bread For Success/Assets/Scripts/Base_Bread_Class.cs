@@ -34,7 +34,8 @@ public class Base_Bread_Class : MonoBehaviour
 
     //Pathfinding Variables
     public GameObject Current_Target; // make sure to reset when idle because some functions rely on this being null, the basis of all bread control
-    public GameObject Seek_Point_Prefab;
+    public GameObject Seek_Point_Prefab; // for testing
+    public GameObject Seek_Point_Prefab_flour; // will eventually add others. basically changes the shape of the path points depending on the target of the path
 
     //speed stats
     public float Acceleration;

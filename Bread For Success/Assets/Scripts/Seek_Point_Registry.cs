@@ -50,7 +50,7 @@ public static class Seek_Point_Registry
         }
     }
 
-    public static GameObject GetPrevious(GameObject seekPoint)
+    public static GameObject Get_Previous(GameObject seekPoint)
     {
         if (seekPoint != null && seekPointToCreator.TryGetValue(seekPoint, out var Previous))
         {

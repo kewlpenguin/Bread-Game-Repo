@@ -7,6 +7,8 @@ public class Seek_Point_Info : MonoBehaviour
 {
     public int Point_ID;
     public GameObject Game_Controller;
+
+
    // public GameObject Object_We_Are_Leading_To; // the bread that created it 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

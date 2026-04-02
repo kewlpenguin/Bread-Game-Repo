@@ -195,8 +195,20 @@ MonoBehaviour:
   Sight_Range: 0
   Patrol_Type: 0
   Patrol_Speed: 0
+  Step_Distance: 0
+  Step_Rotation_Variance: 0
+  Fog_Tile_Target: {fileID: 0}
+  Path_Following: {fileID: 0}
   Current_Target: {fileID: 0}
   Seek_Point_Prefab: {fileID: 600972777281960867, guid: b574c2f1c1a9a884b8e0fd39e5d599f1, type: 3}
+  Seek_Point_Prefabs:
+  - {fileID: 600972777281960867, guid: b574c2f1c1a9a884b8e0fd39e5d599f1, type: 3}
+  - {fileID: 600972777281960867, guid: 38a8fc4afb26e9d4aa1d07ec9dd2ac0d, type: 3}
+  - {fileID: 600972777281960867, guid: dd18714a006698c40bd8d015ab2bbb1f, type: 3}
+  - {fileID: 600972777281960867, guid: 84f5f4f849ff23a4185b285b3ebc8a9c, type: 3}
+  - {fileID: 600972777281960867, guid: 5d2ea0d2cf439ea47897c75db5d0b1d3, type: 3}
+  - {fileID: 600972777281960867, guid: 93fcf3d92a7683e4b80cd0dce9abdd9f, type: 3}
+  - {fileID: 600972777281960867, guid: 5883168f51e276948866bb8789ae53d9, type: 3}
   Acceleration: 0
   Max_Speed: 0
   Retreat_Speed_Mult: 0
@@ -219,7 +231,6 @@ MonoBehaviour:
   Attack_Range: 0
   Death_Anim_Length: 0
   Map_Objects: []
-  Discovered_Active_Map_Objects: []
   Is_Touching_Flour_Pile: 0
   Collect_On_Cooldown: 0
   Deposit_On_Cooldown: 0
