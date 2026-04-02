@@ -40,4 +40,16 @@ public class Seek_Point_Info : MonoBehaviour
         Point_ID = Game_Controller.GetComponent<Game_Controller_Singleton>().Seek_Empty_Gameobject_ID;
     }
 
+    public void Change_Path_Point_Color(Color newColor)
+    {
+        // Get all SpriteRenderers in children (active or inactive)
+        SpriteRenderer[] childRenderers = GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
+
+        foreach (SpriteRenderer renderer in childRenderers)
+        {
+            renderer.color = newColor;
+        }
+    }
+
+
 }

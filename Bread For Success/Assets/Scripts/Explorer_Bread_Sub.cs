@@ -153,7 +153,52 @@ public class Explorer_Bread_Sub : Base_Bread_Class
                     Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Bread_Paths.Add(Path_To_Store); // actually store the path in game controllers memory
                     Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Number_Of_Paths++;
 
+                    foreach(GameObject Path_Point in Current_Path_Seek_Point_Storage)
+                    {
+                        switch (Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Number_Of_Paths)
+                        {
+                            case 0:
+                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.beige);
+                                break;
+
+                            case 1:
+                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.azure);
+                                break;
+
+                            case 2:
+                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.chocolate);
+                                break;
+
+                            case 3:
+                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.limeGreen);
+                                break;
+
+                            case 4:
+                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.magenta);
+                                break;
+
+                            case 5:
+                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.softRed);
+                                break;
+
+                            case 6:
+                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.tan);
+                                break;
+
+                            case 7:
+                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.softYellow);
+                                break;
+
+                            case 8:
+                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.peachPuff);
+                                break;
+
+                        }
+
+                    }
+
                     Current_Path_Seek_Point_Storage = new List<GameObject>(0); // after we assign the path to permanent memory, delete our temporary memory and start over
+
 
                     Current_Behavior = "found new map object following path back to oven";
 
