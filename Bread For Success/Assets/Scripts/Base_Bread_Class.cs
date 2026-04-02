@@ -500,7 +500,13 @@ public class Base_Bread_Class : MonoBehaviour
                 Current_Target = Path_Following.Path_Points[Path_Following.Path_Points.Count - 2];
             }
         }
-
+        else if (collision.CompareTag("Camp_(Small)"))
+        {
+            if (Is_Explorer && Current_Behavior == "going to next path point back")
+            {
+                Current_Target = Path_Following.Path_Points[Path_Following.Path_Points.Count - 2];
+            }
+        }
 
     }
 

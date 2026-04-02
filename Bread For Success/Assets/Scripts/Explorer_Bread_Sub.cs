@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class Explorer_Bread_Sub : Base_Bread_Class
 {
     List<GameObject> Current_Path_Seek_Point_Storage = new List<GameObject>(0);
-
+    bool Have_Cleaned_Up_Path_Points = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -35,13 +35,21 @@ public class Explorer_Bread_Sub : Base_Bread_Class
             Move_Towards_Target();
         }
 
-        if (Dead)
+    }
+
+    public override void Die(float Death_Animation_Length, GameObject Death_Animation, GameObject Post_Death_Effect)
+    {
+        foreach(GameObject Point in Current_Path_Seek_Point_Storage)
         {
-            foreach (GameObject Seek_Point in Current_Path_Seek_Point_Storage)
+            if (Point.GetComponent<Seek_Point_Info>())
             {
-                Destroy(Seek_Point, 1);
+                Destroy(Point);
             }
         }
+
+        Current_Path_Seek_Point_Storage = new List<GameObject>(0);
+
+        base.Die(Death_Animation_Length, Death_Animation, Post_Death_Effect);
     }
 
     private void Explore_Behaviors()
@@ -155,46 +163,48 @@ public class Explorer_Bread_Sub : Base_Bread_Class
 
                     foreach(GameObject Path_Point in Current_Path_Seek_Point_Storage)
                     {
-                        switch (Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Number_Of_Paths)
+                        if (Path_Point.GetComponent<Seek_Point_Info>()) // so we do not get stuch attempting to recolor the flour pile
                         {
-                            case 0:
-                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.beige);
-                                break;
+                            switch (Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Number_Of_Paths)
+                            {
+                                case 0:
+                                    Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.red);
+                                    break;
 
-                            case 1:
-                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.azure);
-                                break;
+                                case 1:
+                                    Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.green);
+                                    break;
 
-                            case 2:
-                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.chocolate);
-                                break;
+                                case 2:
+                                    Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.blue);
+                                    break;
 
-                            case 3:
-                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.limeGreen);
-                                break;
+                                case 3:
+                                    Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.white);
+                                    break;
 
-                            case 4:
-                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.magenta);
-                                break;
+                                case 4:
+                                    Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.black);
+                                    break;
 
-                            case 5:
-                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.softRed);
-                                break;
+                                case 5:
+                                    Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.yellow);
+                                    break;
 
-                            case 6:
-                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.tan);
-                                break;
+                                case 6:
+                                    Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.cyan);
+                                    break;
 
-                            case 7:
-                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.softYellow);
-                                break;
+                                case 7:
+                                    Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.magenta);
+                                    break;
 
-                            case 8:
-                                Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.peachPuff);
-                                break;
+                                case 8:
+                                    Path_Point.GetComponent<Seek_Point_Info>().Change_Path_Point_Color(Color.gray);
+                                    break;
 
+                            }
                         }
-
                     }
 
                     Current_Path_Seek_Point_Storage = new List<GameObject>(0); // after we assign the path to permanent memory, delete our temporary memory and start over
@@ -281,8 +291,6 @@ public class Explorer_Bread_Sub : Base_Bread_Class
         }
         // the plan here is to feed the most recent point into the next point as the previous point
 
-
-        Seek_Point_Registry.DebugLogAll();
 
         Game_Controller_Singleton.GetComponent<Game_Controller_Singleton>().Seek_Empty_Gameobject_ID++; // we do not need to give the new seek point its information because it has its own methods
                                                                                                         //for this inside seek_Point_Info
